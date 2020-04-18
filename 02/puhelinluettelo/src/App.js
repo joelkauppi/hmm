@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/puhelinluettelo'
 
-
-
-
 const Persons = ({persons, filterValue, deletePerson, setPersons}) => {
-
 
   return (
     <div>
@@ -74,7 +70,7 @@ const App = () => {
         setPersons(persons.filter(p => p.id !== person.id))
         setSuccessMessage({
           type: 'success',
-          message: `${person.name} deleted successfully.`
+          message: `${response.data.name} deleted successfully.`
         }
         )
         setTimeout(() => {
@@ -82,8 +78,7 @@ const App = () => {
         }, 5000)
       })
       .catch(error => {
-        setSuccessMessage(
-          {
+        setSuccessMessage({
             type:'error',
             message: `${error}`
           }
@@ -117,20 +112,31 @@ const App = () => {
     if (!persons.map(p => p.name).includes(newPerson.name)) { 
       personService.addPerson(newPerson)
         .then(response => {
-          setPersons(persons.concat(response))
-          setNewPerson({name: '', number: ''})
-
-          setSuccessMessage(
-            {
-              type: 'success',
-              message:`${newPerson.name} added.`
-            }
-          )
+            setPersons(persons.concat(response.data))
+            setNewPerson({name: '', number: ''})
+            setSuccessMessage(
+              {
+                type: 'success',
+                message:`${response.data.name} added.`
+              }
+            )
           setTimeout(() => {
             setSuccessMessage({type:null, message:null})
           }, 5000)
         })
-       
+      .catch(error => {
+        console.log('here2', error.response.data.error)
+        setSuccessMessage(
+          {
+            type: 'error',
+            message: `${error.response.data.error}`
+          }
+        )
+        setTimeout(() => {
+          setSuccessMessage({type:null, message:null})
+        }, 5000)
+        })
+        
     }
     else {
       if(window.confirm(`Are you sure you want to change number for ${newPerson.name}?`)) {
