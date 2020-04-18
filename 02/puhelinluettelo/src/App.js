@@ -70,23 +70,14 @@ const App = () => {
         setPersons(persons.filter(p => p.id !== person.id))
         setSuccessMessage({
           type: 'success',
-          message: `${response.data.name} deleted successfully.`
+          message: `${person.name} deleted successfully.`
         }
         )
         setTimeout(() => {
           setSuccessMessage({type:null, message:null})
         }, 5000)
       })
-      .catch(error => {
-        setSuccessMessage({
-            type:'error',
-            message: `${error}`
-          }
-        )
-        setTimeout(() => {
-          setSuccessMessage({type:null, message:null})
-        }, 5000)
-      })
+     
     }
     }
   
@@ -112,12 +103,13 @@ const App = () => {
     if (!persons.map(p => p.name).includes(newPerson.name)) { 
       personService.addPerson(newPerson)
         .then(response => {
-            setPersons(persons.concat(response.data))
+          console.log("response", response)
+            setPersons(persons.concat({name: response.name, number: response.number}))
             setNewPerson({name: '', number: ''})
             setSuccessMessage(
               {
                 type: 'success',
-                message:`${response.data.name} added.`
+                message:`${response.name} added.`
               }
             )
           setTimeout(() => {
@@ -125,7 +117,6 @@ const App = () => {
           }, 5000)
         })
       .catch(error => {
-        console.log('here2', error.response.data.error)
         setSuccessMessage(
           {
             type: 'error',
@@ -158,6 +149,17 @@ const App = () => {
             }, 5000)
             setNewPerson({name: '', number: ''})
         })
+        .catch(error => {
+          setSuccessMessage(
+            {
+              type: 'error',
+              message: `${error.response.data.error}`
+            }
+          )
+          setTimeout(() => {
+            setSuccessMessage({type:null, message:null})
+          }, 5000)
+          })
       }
       
     }
